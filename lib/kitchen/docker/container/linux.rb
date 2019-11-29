@@ -156,8 +156,7 @@ module Kitchen
                        CODE
                      when 'gentoo'
                        <<-CODE
-                         RUN emerge --sync
-                         RUN emerge net-misc/openssh app-admin/sudo
+                         RUN emerge -q --quiet-build net-misc/openssh app-admin/sudo
                          RUN [ -f "/etc/ssh/ssh_host_rsa_key" ] || ssh-keygen -A -t rsa -f /etc/ssh/ssh_host_rsa_key
                          RUN [ -f "/etc/ssh/ssh_host_dsa_key" ] || ssh-keygen -A -t dsa -f /etc/ssh/ssh_host_dsa_key
                        CODE
