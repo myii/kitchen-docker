@@ -45,9 +45,6 @@ module Kitchen
           # See https://bugs.archlinux.org/task/47052 for why we
           # blank out limits.conf.
           <<-CODE
-            RUN pacman --noconfirm -Sy archlinux-keyring
-            RUN pacman-db-upgrade
-            RUN pacman --noconfirm -Syu openssl openssh sudo curl
             RUN [ -f "/etc/ssh/ssh_host_rsa_key" ] || ssh-keygen -A -t rsa -f /etc/ssh/ssh_host_rsa_key
             RUN [ -f "/etc/ssh/ssh_host_dsa_key" ] || ssh-keygen -A -t dsa -f /etc/ssh/ssh_host_dsa_key
             RUN echo >/etc/security/limits.conf
@@ -62,8 +59,6 @@ module Kitchen
           packages = <<-CODE
             ENV DEBIAN_FRONTEND noninteractive
             ENV container docker
-            RUN apt-get update
-            RUN apt-get install -y sudo openssh-server curl lsb-release
           CODE
           config[:disable_upstart] ? disable_upstart + packages : packages
         end
@@ -71,8 +66,6 @@ module Kitchen
         def fedora_platform
           <<-CODE
             ENV container docker
-            RUN dnf clean all
-            RUN dnf install -y sudo openssh-server openssh-clients which curl
             RUN [ -f "/etc/ssh/ssh_host_rsa_key" ] || ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N ''
             RUN [ -f "/etc/ssh/ssh_host_dsa_key" ] || ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key -N ''
           CODE
@@ -80,13 +73,12 @@ module Kitchen
 
         def gentoo_platform
           <<-CODE
-            RUN emerge-webrsync
-            RUN emerge --quiet --noreplace net-misc/openssh app-admin/sudo
             RUN [ -f "/etc/ssh/ssh_host_rsa_key" ] || ssh-keygen -A -t rsa -f /etc/ssh/ssh_host_rsa_key
             RUN [ -f "/etc/ssh/ssh_host_dsa_key" ] || ssh-keygen -A -t dsa -f /etc/ssh/ssh_host_dsa_key
           CODE
         end
 
+        # No pre-salted images yet, so no modifications here
         def gentoo_paludis_platform
           <<-CODE
             RUN cave sync
@@ -99,7 +91,6 @@ module Kitchen
         def opensuse_platform
           <<-CODE
             ENV container docker
-            RUN zypper install -y sudo openssh which curl
             RUN /usr/sbin/sshd-gen-keys-start
           CODE
         end
@@ -107,8 +98,6 @@ module Kitchen
         def rhel_platform
           <<-CODE
             ENV container docker
-            RUN yum clean all
-            RUN yum install -y sudo openssh-server openssh-clients which curl
             RUN [ -f "/etc/ssh/ssh_host_rsa_key" ] || ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N ''
             RUN [ -f "/etc/ssh/ssh_host_dsa_key" ] || ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key -N ''
           CODE
